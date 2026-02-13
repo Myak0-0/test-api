@@ -41,6 +41,8 @@ class ApiSync extends Command
 
                 if (empty($items)) break;
 
+                $chunk = [];
+
                 foreach ($items as $item) {
                     $insertData = [
                             'created_at' => now(),
@@ -144,8 +146,10 @@ class ApiSync extends Command
                                 ]);
                                 break;
                         }
-
-                        DB::table($point)->insert($insertData);
+                        $chunk[] = $insertData;                        
+                }
+                if (!empty($chunk)) {
+                    DB::table($point)->insert($chunk);
                 }
 
                 $this->info("Запрос к {$point}, страница {$page}. Найдено записей: " . count($items));
